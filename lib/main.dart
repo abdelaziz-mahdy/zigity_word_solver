@@ -62,7 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (context, wordController, child) {
             if (wordController.loading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (wordController.errorMessage.isNotEmpty) {
+            } else if (wordController.errorMessage.isNotEmpty &&
+                !wordController.dataLoaded) {
               return Center(child: Text(wordController.errorMessage));
             } else {
               return Padding(

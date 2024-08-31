@@ -41,7 +41,7 @@ class WordService {
     }
 
     // Count the letters in the input available letters
-    Map<String, int> letterCount = {};
+    Map<String, int> letterCount = {mandatoryLetters.firstOrNull ?? "": 1};
     for (var letter in availableLetters) {
       letterCount[letter] = (letterCount[letter] ?? 0) + 1;
     }
@@ -49,11 +49,6 @@ class WordService {
     int neededFreeLetters = 0;
 
     for (var letter in word.split('')) {
-      if (mandatoryLetters.contains(letter)) {
-        // Mandatory letters are already counted, continue
-        continue;
-      }
-
       if (letterCount.containsKey(letter) && letterCount[letter]! > 0) {
         // Use an available letter if possible
         letterCount[letter] = letterCount[letter]! - 1;

@@ -20,21 +20,25 @@ class WordController extends ChangeNotifier {
   List<String> get availableLetters => _availableLetters;
   List<String> get foundWords => _foundWords;
   bool get loading => _loading;
+  bool dataLoaded = false;
   String get errorMessage => _errorMessage;
 
   Future<void> loadWords() async {
     _loading = true;
+    dataLoaded = false;
     _errorMessage = '';
     notifyListeners();
 
     try {
       await _wordService.loadWords();
+      dataLoaded = true;
     } catch (e) {
       _errorMessage = 'Failed to load words: ${e.toString()}';
+      dataLoaded = false;
+    } finally {
+      _loading = false;
+      notifyListeners();
     }
-
-    _loading = false;
-    notifyListeners();
   }
 
   void addMandatoryLetter(String letter) {
