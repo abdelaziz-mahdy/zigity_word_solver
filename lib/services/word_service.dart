@@ -1,20 +1,34 @@
 // lib/services/word_service.dart
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class WordService {
   Set<String> _wordSet = {};
 
+  // Future<void> loadWords() async {
+  //   // const url =
+  //   //     'https://raw.githubusercontent.com/dwyl/english-words/master/words.txt';
+  //   const url =
+  //       "https://raw.githubusercontent.com/dolph/dictionary/master/popular.txt";
+  //   try {
+  //     final response = await http.get(Uri.parse(url));
+  //     if (response.statusCode == 200) {
+  //       final words = response.body.split('\n');
+  //       _wordSet = words.map((word) => word.trim().toLowerCase()).toSet();
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Failed to load words: $e');
+  //   }
+  // }
+
+  Future<String> getFileData(String path) async {
+    return await rootBundle.loadString(path);
+  }
+
   Future<void> loadWords() async {
-    // const url =
-    //     'https://raw.githubusercontent.com/dwyl/english-words/master/words.txt';
-    const url =
-        "https://raw.githubusercontent.com/dolph/dictionary/master/popular.txt";
     try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final words = response.body.split('\n');
-        _wordSet = words.map((word) => word.trim().toLowerCase()).toSet();
-      }
+      final words = (await getFileData("assets/popular.txt")).split('\n');
+      _wordSet = words.map((word) => word.trim().toLowerCase()).toSet();
     } catch (e) {
       throw Exception('Failed to load words: $e');
     }
