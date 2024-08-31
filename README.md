@@ -1,5 +1,3 @@
-
-
 # Zigity Word Solver
 
 Zigity Word Solver is a Flutter application designed to find valid words based on a set of mandatory and available letters. This app can load words from a local asset file or an API, offering flexibility in how it retrieves word data.
@@ -23,13 +21,15 @@ Follow these steps to set up and run the Zigity Word Solver on your local machin
 ### Installation
 
 1. **Clone the Repository**:
+
    ```bash
-   git clone https://github.com/your-username/zigity_word_solver.git
+   git clone https://github.com/abdelaziz-mahdy/zigity_word_solver.git
    cd zigity_word_solver
    ```
 
 2. **Install Dependencies**:
    Run the following command to install all necessary dependencies:
+
    ```bash
    flutter pub get
    ```
@@ -52,15 +52,18 @@ Follow these steps to set up and run the Zigity Word Solver on your local machin
 ### How It Works
 
 1. **Word Loading**:
+
    - The app uses the `TextLoader` interface to load words from either an asset file or an API.
    - `AssetTextLoader` loads words from a local asset file (e.g., `assets/popular.txt`).
    - `ApiTextLoader` loads words from a specified URL.
 
 2. **User Input**:
+
    - Enter mandatory letters (must appear in each word).
    - Enter available letters (can be used to form words).
 
 3. **Word Finding**:
+
    - The app finds the top 10 valid words using the mandatory and available letters provided by the user.
 
 4. **Display**:
@@ -69,7 +72,9 @@ Follow these steps to set up and run the Zigity Word Solver on your local machin
 ### Customization
 
 - **Switch Word Source**:
+
   - To switch between asset and API word sources, change the `WordService` initialization in `word_controller.dart`:
+
     ```dart
     // For asset loading
     final WordService _wordService = WordService(textLoader: AssetTextLoader(path: "assets/popular.txt"));
@@ -88,4 +93,3 @@ Contributions are welcome! Feel free to submit a pull request or open an issue t
 ## License
 
 This project is licensed under the MIT License.
-
