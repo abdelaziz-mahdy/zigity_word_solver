@@ -111,13 +111,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       ...wordController.mandatoryLetters.map((letter) => Chip(
                             label: Text(letter),
-                            backgroundColor: Colors.redAccent,
+                            backgroundColor: Colors.redAccent.shade100,
                             onDeleted: () =>
                                 wordController.removeMandatoryLetter(letter),
                           )),
                       ...wordController.availableLetters.map((letter) => Chip(
                             label: Text(letter),
-                            backgroundColor: Colors.blueAccent,
+                            // backgroundColor: Colors.blueAccent,
                             onDeleted: () =>
                                 wordController.removeAvailableLetter(letter),
                           )),
@@ -146,15 +146,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   const SizedBox(height: 20),
                   if (wordController.foundWords.isNotEmpty)
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: wordController.foundWords.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(wordController.foundWords[index]),
-                          );
-                        },
-                      ),
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 4.0,
+                      children: wordController.foundWords.map((word) {
+                        return Chip(
+                          label: Text(word),
+                          // backgroundColor: Colors.blueAccent,
+                        );
+                      }).toList(),
                     )
                   else if (wordController.errorMessage.isNotEmpty)
                     Text(wordController.errorMessage),
