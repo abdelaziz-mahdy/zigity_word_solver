@@ -50,7 +50,9 @@ class WordController extends ChangeNotifier {
   }
 
   void findWords(int freeLetters) {
-    _foundWords = _wordService.findWords(_mandatoryLetters, _availableLetters, freeLetters);
+    _foundWords = _wordService.findWords(
+        _mandatoryLetters, _availableLetters, freeLetters);
+    print("found words $_foundWords");
     notifyListeners();
   }
 }

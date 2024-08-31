@@ -24,26 +24,31 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late final wordController = Provider.of<WordController>(context);
+
+  // Initialize text editing controllers
+  final TextEditingController mandatoryLetterController =
+      TextEditingController();
+  final TextEditingController availableLetterController =
+      TextEditingController();
+  final TextEditingController freeLettersController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
-    final wordController = Provider.of<WordController>(context);
-
-    // Initialize text editing controllers
-    final TextEditingController mandatoryLetterController =
-        TextEditingController();
-    final TextEditingController availableLetterController =
-        TextEditingController();
-    final TextEditingController freeLettersController = TextEditingController();
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(title),
+        title: Text(widget.title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -51,41 +56,30 @@ class MyHomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Mandatory Letters Input
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: mandatoryLetterController,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter a mandatory letter',
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLength: 1, // Restrict to a single character
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'[a-zA-Z]')), // Allow only letters
-                    ],
-                    onChanged: (value) {
-                      if (value.length == 1) {
-                        wordController.addMandatoryLetter(value);
-                        mandatoryLetterController.clear(); // Clear after input
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    if (mandatoryLetterController.text.isNotEmpty) {
-                      wordController
-                          .addMandatoryLetter(mandatoryLetterController.text);
-                      mandatoryLetterController.clear();
-                    }
-                  },
-                ),
+            TextField(
+              controller: mandatoryLetterController,
+              decoration: const InputDecoration(
+                labelText: 'Enter a mandatory letter',
+                border: OutlineInputBorder(),
+              ),
+              maxLength: 1, // Restrict to a single character
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                    RegExp(r'[a-zA-Z]')), // Allow only letters
               ],
+              onChanged: (value) {
+                if (value.isEmpty) {
+                  wordController.removeMandatoryLetter(
+                      wordController.mandatoryLetters.firstOrNull ?? "");
+                  // mandatoryLetterController.clear(); // Clear after input
+                }
+                if (value.length == 1) {
+                  wordController.addMandatoryLetter(value);
+                  // mandatoryLetterController.clear(); // Clear after input
+                }
+              },
             ),
+
             const SizedBox(height: 10),
 
             // Available Letters Input

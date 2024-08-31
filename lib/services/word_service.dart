@@ -5,7 +5,8 @@ class WordService {
   Set<String> _wordSet = {};
 
   Future<void> loadWords() async {
-    final url = 'https://raw.githubusercontent.com/dwyl/english-words/master/words.txt';
+    const url =
+        'https://raw.githubusercontent.com/dwyl/english-words/master/words.txt';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -17,16 +18,20 @@ class WordService {
     }
   }
 
-  List<String> findWords(List<String> mandatoryLetters, List<String> availableLetters, int freeLetters) {
+  List<String> findWords(List<String> mandatoryLetters,
+      List<String> availableLetters, int freeLetters) {
     String inputLetters = availableLetters.join('').toLowerCase();
     if (mandatoryLetters.isEmpty && inputLetters.isEmpty) return [];
 
-    List<String> foundWords = _wordSet.where((word) => _canFormWord(
-        word, mandatoryLetters.join(''), inputLetters, freeLetters)).toList();
+    List<String> foundWords = _wordSet
+        .where((word) => _canFormWord(
+            word, mandatoryLetters.join(''), inputLetters, freeLetters))
+        .toList();
 
     foundWords.sort((a, b) => _countUsedLetters(
-        b, mandatoryLetters.join('') + inputLetters).compareTo(
-        _countUsedLetters(a, mandatoryLetters.join('') + inputLetters)));
+            b, mandatoryLetters.join('') + inputLetters)
+        .compareTo(
+            _countUsedLetters(a, mandatoryLetters.join('') + inputLetters)));
 
     if (foundWords.length > 5) {
       foundWords = foundWords.sublist(0, 5); // Limit to top 5 words
@@ -35,7 +40,8 @@ class WordService {
     return foundWords;
   }
 
-  bool _canFormWord(String word, String mandatoryLetters, String inputLetters, int freeLetters) {
+  bool _canFormWord(String word, String mandatoryLetters, String inputLetters,
+      int freeLetters) {
     for (var letter in mandatoryLetters.split('')) {
       if (!word.contains(letter)) return false;
     }
