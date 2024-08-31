@@ -9,17 +9,24 @@ class WordController extends ChangeNotifier {
   final List<String> _availableLetters = [];
   List<String> _foundWords = [];
   bool _loading = false;
+  String _errorMessage = '';
 
   List<String> get mandatoryLetters => _mandatoryLetters;
   List<String> get availableLetters => _availableLetters;
   List<String> get foundWords => _foundWords;
   bool get loading => _loading;
+  String get errorMessage => _errorMessage;
 
   Future<void> loadWords() async {
     _loading = true;
+    _errorMessage = '';
     notifyListeners();
 
-    await _wordService.loadWords();
+    try {
+      await _wordService.loadWords();
+    } catch (e) {
+      _errorMessage = 'Failed to load words: ${e.toString()}';
+    }
 
     _loading = false;
     notifyListeners();
@@ -51,8 +58,17 @@ class WordController extends ChangeNotifier {
 
   void findWords(int freeLetters) {
     _foundWords = _wordService.findWords(
-        _mandatoryLetters, _availableLetters, freeLetters);
-    print("found words $_foundWords");
+      _mandatoryLetters,
+      _availableLetters,
+      freeLetters,
+    );
+
+    if (_foundWords.isEmpty) {
+      _errorMessage = 'No valid words found.';
+    } else {
+      _errorMessage = '';
+    }
+
     notifyListeners();
   }
 }

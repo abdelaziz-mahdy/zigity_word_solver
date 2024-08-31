@@ -15,10 +15,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => WordController(),
-      child: MaterialApp(
+      child: const MaterialApp(
         title: 'Zigity Word Solver',
-        themeMode: ThemeMode.system, // Use system theme mode
-        home: const MyHomePage(title: 'Zigity Word Solver'),
+        themeMode: ThemeMode.system,
+        home: MyHomePage(title: 'Zigity Word Solver'),
       ),
     );
   }
@@ -34,14 +34,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final wordController = Provider.of<WordController>(context);
-
-  // Initialize text editing controllers
+  late final WordController wordController;
   final TextEditingController mandatoryLetterController =
       TextEditingController();
   final TextEditingController availableLetterController =
       TextEditingController();
   final TextEditingController freeLettersController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    wordController = Provider.of<WordController>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      wordController.loadWords();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,119 +57,112 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Mandatory Letters Input
-            TextField(
-              controller: mandatoryLetterController,
-              decoration: const InputDecoration(
-                labelText: 'Enter a mandatory letter',
-                border: OutlineInputBorder(),
-              ),
-              maxLength: 1, // Restrict to a single character
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                    RegExp(r'[a-zA-Z]')), // Allow only letters
-              ],
-              onChanged: (value) {
-                if (value.isEmpty) {
-                  wordController.removeMandatoryLetter(
-                      wordController.mandatoryLetters.firstOrNull ?? "");
-                  // mandatoryLetterController.clear(); // Clear after input
-                }
-                if (value.length == 1) {
-                  wordController.addMandatoryLetter(value);
-                  // mandatoryLetterController.clear(); // Clear after input
-                }
-              },
-            ),
-
-            const SizedBox(height: 10),
-
-            // Available Letters Input
-            TextField(
-              controller: availableLetterController,
-              decoration: const InputDecoration(
-                labelText: 'Enter available letters',
-                border: OutlineInputBorder(),
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                    RegExp(r'[a-zA-Z]')), // Allow only letters
-              ],
-              onChanged: (value) {
-                if (value.isNotEmpty) {
-                  wordController.addAvailableLetter(value);
-                  availableLetterController.clear(); // Clear after input
-                }
-              },
-            ),
-            const SizedBox(height: 10),
-
-            // Display Chips for Letters
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 4.0,
-              children: [
-                ...wordController.mandatoryLetters.map((letter) => Chip(
-                      label: Text(letter),
-                      backgroundColor: Colors.redAccent,
-                      onDeleted: () =>
-                          wordController.removeMandatoryLetter(letter),
-                    )),
-                ...wordController.availableLetters.map((letter) => Chip(
-                      label: Text(letter),
-                      backgroundColor: Colors.blueAccent,
-                      onDeleted: () =>
-                          wordController.removeAvailableLetter(letter),
-                    )),
-              ],
-            ),
-            const SizedBox(height: 10),
-
-            // Free Letters Input
-            TextField(
-              controller: freeLettersController,
-              decoration: const InputDecoration(
-                labelText: 'Enter number of free letters',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly, // Allow only digits
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Find Words Button
-            ElevatedButton(
-              onPressed: () {
-                // Trigger word search
-                wordController
-                    .findWords(int.tryParse(freeLettersController.text) ?? 0);
-              },
-              child: const Text('Find Words'),
-            ),
-            const SizedBox(height: 20),
-
-            // Results or Loading Indicator
-            wordController.loading
-                ? const CircularProgressIndicator()
-                : Expanded(
-                    child: ListView.builder(
-                      itemCount: wordController.foundWords.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(wordController.foundWords[index]),
-                        );
-                      },
+      body: Consumer<WordController>(
+        builder: (context, wordController, child) {
+          if (wordController.loading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (wordController.errorMessage.isNotEmpty) {
+            return Center(child: Text(wordController.errorMessage));
+          } else {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: mandatoryLetterController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter a mandatory letter',
+                      border: OutlineInputBorder(),
                     ),
+                    maxLength: 1,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'[a-zA-Z]')), // Allow only letters
+                    ],
+                    onChanged: (value) {
+                      if (value.length == 1) {
+                        wordController.addMandatoryLetter(value);
+                      }
+                    },
                   ),
-          ],
-        ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: availableLetterController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter available letters',
+                      border: OutlineInputBorder(),
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'[a-zA-Z]')), // Allow only letters
+                    ],
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        wordController.addAvailableLetter(value);
+                        availableLetterController.clear();
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: [
+                      ...wordController.mandatoryLetters.map((letter) => Chip(
+                            label: Text(letter),
+                            backgroundColor: Colors.redAccent,
+                            onDeleted: () =>
+                                wordController.removeMandatoryLetter(letter),
+                          )),
+                      ...wordController.availableLetters.map((letter) => Chip(
+                            label: Text(letter),
+                            backgroundColor: Colors.blueAccent,
+                            onDeleted: () =>
+                                wordController.removeAvailableLetter(letter),
+                          )),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: freeLettersController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter number of free letters',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter
+                          .digitsOnly, // Allow only digits
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      wordController.findWords(
+                          int.tryParse(freeLettersController.text) ?? 0);
+                    },
+                    child: const Text('Find Words'),
+                  ),
+                  const SizedBox(height: 20),
+                  if (wordController.foundWords.isNotEmpty)
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: wordController.foundWords.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(wordController.foundWords[index]),
+                          );
+                        },
+                      ),
+                    )
+                  else if (wordController.errorMessage.isNotEmpty)
+                    Text(wordController.errorMessage),
+                ],
+              ),
+            );
+          }
+        },
       ),
     );
   }
