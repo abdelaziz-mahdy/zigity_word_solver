@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   build_web:
-    name: Build Flutter Web, Take Screenshots and Deploy
+    name: Build Flutter Web, Deploy
     runs-on: ubuntu-latest
 
     steps:
