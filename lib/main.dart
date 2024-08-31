@@ -83,6 +83,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             RegExp(r'[a-zA-Z]')), // Allow only letters
                       ],
                       onChanged: (value) {
+                        if (value.isEmpty &&
+                            wordController.mandatoryLetters.isNotEmpty) {
+                          wordController.removeMandatoryLetter(
+                              wordController.mandatoryLetters.first);
+                        }
                         if (value.length == 1) {
                           wordController.addMandatoryLetter(value);
                         }
