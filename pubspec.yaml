@@ -1,5 +1,5 @@
 name: zigity_word_solver
-description: "A new Flutter project."
+description: "Zigity Word Solver is a Flutter application designed to find valid words based on a set of mandatory and available letters. This app can load words from a local asset file or an API, offering flexibility in how it retrieves word data."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

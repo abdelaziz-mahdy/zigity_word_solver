@@ -5,7 +5,7 @@
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Zigity Word Solver is a Flutter application designed to find valid words based on a set of mandatory and available letters. This app can load words from a local asset file or an API, offering flexibility in how it retrieves word data.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
