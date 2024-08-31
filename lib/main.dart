@@ -33,6 +33,13 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final wordController = Provider.of<WordController>(context);
 
+    // Initialize text editing controllers
+    final TextEditingController mandatoryLetterController =
+        TextEditingController();
+    final TextEditingController availableLetterController =
+        TextEditingController();
+    final TextEditingController freeLettersController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -41,38 +48,67 @@ class MyHomePage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Enter mandatory letters (one at a time)',
-                border: OutlineInputBorder(),
-              ),
-              maxLength: 1,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')), // Allow only letters
+            // Mandatory Letters Input
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: mandatoryLetterController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter a mandatory letter',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLength: 1, // Restrict to a single character
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'[a-zA-Z]')), // Allow only letters
+                    ],
+                    onChanged: (value) {
+                      if (value.length == 1) {
+                        wordController.addMandatoryLetter(value);
+                        mandatoryLetterController.clear(); // Clear after input
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    if (mandatoryLetterController.text.isNotEmpty) {
+                      wordController
+                          .addMandatoryLetter(mandatoryLetterController.text);
+                      mandatoryLetterController.clear();
+                    }
+                  },
+                ),
               ],
-              onChanged: (value) {
-                if (value.isNotEmpty) {
-                  wordController.addMandatoryLetter(value);
-                }
-              },
             ),
             const SizedBox(height: 10),
+
+            // Available Letters Input
             TextField(
+              controller: availableLetterController,
               decoration: const InputDecoration(
-                labelText: 'Enter available letters (one at a time)',
+                labelText: 'Enter available letters',
                 border: OutlineInputBorder(),
               ),
-              maxLength: 1,
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]')), // Allow only letters
+                FilteringTextInputFormatter.allow(
+                    RegExp(r'[a-zA-Z]')), // Allow only letters
               ],
               onChanged: (value) {
                 if (value.isNotEmpty) {
                   wordController.addAvailableLetter(value);
+                  availableLetterController.clear(); // Clear after input
                 }
               },
             ),
+            const SizedBox(height: 10),
+
+            // Display Chips for Letters
             Wrap(
               spacing: 8.0,
               runSpacing: 4.0,
@@ -80,17 +116,22 @@ class MyHomePage extends StatelessWidget {
                 ...wordController.mandatoryLetters.map((letter) => Chip(
                       label: Text(letter),
                       backgroundColor: Colors.redAccent,
-                      onDeleted: () => wordController.removeMandatoryLetter(letter),
+                      onDeleted: () =>
+                          wordController.removeMandatoryLetter(letter),
                     )),
                 ...wordController.availableLetters.map((letter) => Chip(
                       label: Text(letter),
                       backgroundColor: Colors.blueAccent,
-                      onDeleted: () => wordController.removeAvailableLetter(letter),
+                      onDeleted: () =>
+                          wordController.removeAvailableLetter(letter),
                     )),
               ],
             ),
             const SizedBox(height: 10),
+
+            // Free Letters Input
             TextField(
+              controller: freeLettersController,
               decoration: const InputDecoration(
                 labelText: 'Enter number of free letters',
                 border: OutlineInputBorder(),
@@ -101,14 +142,19 @@ class MyHomePage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
+
+            // Find Words Button
             ElevatedButton(
               onPressed: () {
                 // Trigger word search
-                wordController.findWords(int.tryParse(freeLettersController.text) ?? 0);
+                wordController
+                    .findWords(int.tryParse(freeLettersController.text) ?? 0);
               },
               child: const Text('Find Words'),
             ),
             const SizedBox(height: 20),
+
+            // Results or Loading Indicator
             wordController.loading
                 ? const CircularProgressIndicator()
                 : Expanded(
