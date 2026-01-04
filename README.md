@@ -54,7 +54,7 @@ Follow these steps to set up and run the Zigity Word Solver on your local machin
 1. **Word Loading**:
 
    - The app uses the `TextLoader` interface to load words from either an asset file or an API.
-   - `AssetTextLoader` loads words from a local asset file (e.g., `assets/popular.txt`).
+   - `AssetTextLoader` loads words from a local asset file (e.g., `assets/wordlist.txt`).
    - `ApiTextLoader` loads words from a specified URL.
 
 2. **User Input**:
@@ -69,6 +69,21 @@ Follow these steps to set up and run the Zigity Word Solver on your local machin
 4. **Display**:
    - Results are shown as chips with colored borders, differentiating between mandatory and available letters.
 
+### Word List Sources
+
+The word list used in this application is compiled from the following open-source repositories:
+
+- **[dolph/dictionary](https://github.com/dolph/dictionary)**: A curated collection of English words including popular words, OSPD (Official Scrabble Player's Dictionary), and Unix word lists.
+- **[dwyl/english-words](https://github.com/dwyl/english-words)**: A comprehensive list of English words.
+
+The combined word list contains approximately 394,000 unique English words. You can regenerate the word list by running the Python script:
+
+```bash
+python3 scripts/download_wordlists.py
+```
+
+This script downloads and merges word lists from both repositories, removing duplicates and saving the result to `assets/wordlist.txt`.
+
 ### Customization
 
 - **Switch Word Source**:
@@ -77,7 +92,7 @@ Follow these steps to set up and run the Zigity Word Solver on your local machin
 
     ```dart
     // For asset loading
-    final WordService _wordService = WordService(textLoader: AssetTextLoader(path: "assets/popular.txt"));
+    final WordService _wordService = WordService(textLoader: AssetTextLoader(path: "assets/wordlist.txt"));
 
     // For API loading
     // final WordService _wordService = WordService(textLoader: ApiTextLoader(url: "your_api_url"));

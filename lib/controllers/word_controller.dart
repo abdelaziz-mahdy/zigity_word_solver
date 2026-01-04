@@ -5,11 +5,7 @@ import 'package:zigity_word_solver/services/word_service.dart';
 
 class WordController extends ChangeNotifier {
   final WordService _wordService =
-      WordService(textLoader: AssetTextLoader(path: "assets/popular.txt"));
-//  //   // const url =
-  //   //     'https://raw.githubusercontent.com/dwyl/english-words/master/words.txt';
-  //   const url =
-  //       "https://raw.githubusercontent.com/dolph/dictionary/master/popular.txt";
+      WordService(textLoader: AssetTextLoader(path: "assets/wordlist.txt"));
   final List<String> _mandatoryLetters = [];
   final List<String> _availableLetters = [];
   List<String> _foundWords = [];
