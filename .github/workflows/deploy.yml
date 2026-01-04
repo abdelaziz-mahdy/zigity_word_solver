@@ -33,9 +33,9 @@ jobs:
 
       
       - name: Build Flutter Web
-        run: flutter build web --release --base-href "/zigity_word_solver/" --web-renderer canvaskit
+        run: flutter build web --release --base-href "/zigity_word_solver/"
       # - name: Build Flutter Web wasm
-      #   run: flutter build web --wasm --release --base-href "/zigity_word_solver/" --web-renderer canvaskit
+      #   run: flutter build web --wasm --release --base-href "/zigity_word_solver/"
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
