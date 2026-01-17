@@ -13,6 +13,7 @@ class WordleController extends ChangeNotifier {
   final Map<String, List<int>> _wrongPositions = {}; // Letter -> wrong positions
   final List<String> _excludedLetters = []; // Gray letters
   List<String> _foundWords = [];
+  List<({String word, int score, int newLetters})> _exploratoryWords = [];
   bool _loading = false;
   String _errorMessage = '';
   bool dataLoaded = false;
@@ -23,6 +24,8 @@ class WordleController extends ChangeNotifier {
   Map<String, List<int>> get wrongPositions => _wrongPositions;
   List<String> get excludedLetters => _excludedLetters;
   List<String> get foundWords => _foundWords;
+  List<({String word, int score, int newLetters})> get exploratoryWords =>
+      _exploratoryWords;
   bool get loading => _loading;
   String get errorMessage => _errorMessage;
 
@@ -121,6 +124,9 @@ class WordleController extends ChangeNotifier {
       excludedLetters: _excludedLetters.isEmpty ? null : _excludedLetters,
     );
 
+    // Also find exploratory words
+    _findExploratoryWords();
+
     if (_foundWords.isEmpty) {
       _errorMessage = 'No valid words found.';
     } else {
@@ -130,12 +136,28 @@ class WordleController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _findExploratoryWords() {
+    // Combine all tested letters (green + yellow + gray)
+    final testedLetters = <String>{
+      ..._knownPositions.values.map((l) => l.toLowerCase()),
+      ..._containsLetters.map((l) => l.toLowerCase()),
+      ..._excludedLetters.map((l) => l.toLowerCase()),
+    };
+
+    _exploratoryWords = _wordleService.findExploratoryWords(
+      wordLength: _wordLength,
+      testedLetters: testedLetters,
+      limit: 20,
+    );
+  }
+
   void clearAll() {
     _knownPositions.clear();
     _containsLetters.clear();
     _wrongPositions.clear();
     _excludedLetters.clear();
     _foundWords.clear();
+    _exploratoryWords = [];
     _errorMessage = '';
     notifyListeners();
   }

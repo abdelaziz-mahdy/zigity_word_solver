@@ -89,4 +89,60 @@ class WordleService {
 
     return foundWords;
   }
+
+  /// Finds exploratory words that maximize letter elimination.
+  /// These words test as many untested letters as possible.
+  List<({String word, int score, int newLetters})> findExploratoryWords({
+    required int wordLength,
+    required Set<String> testedLetters,
+    int limit = 20,
+  }) {
+    if (wordLength <= 0) return [];
+
+    final List<({String word, int score, int newLetters})> scoredWords = [];
+
+    for (final word in _wordSet) {
+      if (word.length != wordLength) continue;
+
+      final score = _scoreExploratoryWord(word, testedLetters);
+      if (score.untestedCount > 0) {
+        scoredWords.add((
+          word: word,
+          score: score.totalScore,
+          newLetters: score.untestedCount,
+        ));
+      }
+    }
+
+    // Sort by score descending
+    scoredWords.sort((a, b) => b.score.compareTo(a.score));
+
+    // Return top N results
+    if (scoredWords.length > limit) {
+      return scoredWords.sublist(0, limit);
+    }
+
+    return scoredWords;
+  }
+
+  /// Scores a word for exploratory value.
+  /// Higher scores mean more untested letters.
+  ({int untestedCount, int totalScore}) _scoreExploratoryWord(
+    String word,
+    Set<String> testedLetters,
+  ) {
+    final letters = word.toLowerCase().split('');
+    final uniqueLetters = letters.toSet();
+
+    // Count untested unique letters
+    final untestedCount =
+        uniqueLetters.where((l) => !testedLetters.contains(l)).length;
+
+    // Bonus: prefer words with all unique letters (no repeats)
+    final uniqueBonus = (uniqueLetters.length == word.length) ? 1 : 0;
+
+    final totalScore = untestedCount * 10 + uniqueBonus;
+
+    return (untestedCount: untestedCount, totalScore: totalScore);
+  }
 }
