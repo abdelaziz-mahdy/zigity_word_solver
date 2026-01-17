@@ -295,12 +295,16 @@ class _WordleSolverPageState extends State<WordleSolverPage> {
               ),
               const SizedBox(height: 20),
 
-              // Results
+              // Results - Possible Answers
               if (controller.foundWords.isNotEmpty) ...[
+                const Text(
+                  'Possible Answers',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
                 Text(
-                  'Found ${controller.foundWords.length} words:',
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                  'Found ${controller.foundWords.length} possible words:',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 10),
                 Wrap(
@@ -318,6 +322,46 @@ class _WordleSolverPageState extends State<WordleSolverPage> {
                   controller.errorMessage,
                   style: const TextStyle(color: Colors.red),
                 ),
+
+              // Exploratory Words Section
+              if (controller.exploratoryWords.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    const Text(
+                      'Exploratory Words',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 8),
+                    Tooltip(
+                      message:
+                          'These words test the most untested letters, helping\nyou eliminate possibilities faster. They may contain\nletters you\'ve already ruled out (gray letters).',
+                      child: Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Words to eliminate more letters:',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8.0,
+                  runSpacing: 4.0,
+                  children: controller.exploratoryWords.map((entry) {
+                    return Chip(
+                      label: Text('${entry.word} (${entry.newLetters} new)'),
+                      backgroundColor: Colors.deepPurple.shade100,
+                    );
+                  }).toList(),
+                ),
+              ],
             ],
           ),
         );
